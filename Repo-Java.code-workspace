@@ -6,8 +6,8 @@
     ],
     "settings": {
         "java.project.sourcePaths": [
-            "estructurado"
-        ],
+			"estructurado"
+		],
         "java.project.outputPath": "bin"
     }
 }
