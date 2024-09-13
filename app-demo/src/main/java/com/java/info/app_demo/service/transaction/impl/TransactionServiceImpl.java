@@ -4,11 +4,14 @@ import com.java.info.app_demo.domain.Transaction;
 import com.java.info.app_demo.repository.transaction.TransactionRepository;
 import com.java.info.app_demo.service.transaction.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionRepository transactionRepository;
@@ -20,6 +23,8 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public Transaction addTransaction(Transaction transaction) {
+        transaction.setIdTransaction(UUID.randomUUID());
+        transaction.setDateTime(LocalDateTime.now());
         return transactionRepository.save(transaction);
     }
 
@@ -39,6 +44,7 @@ public class TransactionServiceImpl implements TransactionService {
             throw new RuntimeException("No se encontró transacción.");
         }
         transaction.setIdTransaction(id);
+        transaction.setDateTime(LocalDateTime.now());
         return transactionRepository.save(transaction);
     }
 

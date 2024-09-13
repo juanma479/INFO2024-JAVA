@@ -1,24 +1,34 @@
 package com.java.info.app_demo.domain;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
 public class Transaction {
 
+    @Id
     private UUID idTransaction;
+
     private String type; // Tipo de transacción :Ingreso o Gasto
     private String description;
     private Double amount;
     private LocalDateTime dateTime;
 
-    public Transaction(UUID idTransaction, String type, String description,
-                       Double amount, LocalDateTime dateTime) {
-        this.idTransaction = idTransaction;
+    // Constructor sin parámetros (requerido por JPA)
+    public Transaction() {}
+
+    public Transaction(String type, String description,
+                       Double amount) {
+        this.idTransaction = UUID.randomUUID();
         this.type = type;
         this.description = description;
         this.amount = amount;
-        this.dateTime = dateTime;
+        this.dateTime = LocalDateTime.now();
     }
+
 
     public UUID getIdTransaction() {
         return idTransaction;
