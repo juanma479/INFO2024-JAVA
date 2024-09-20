@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.time.LocalDate;
+
 
 @Getter
 @Setter
@@ -24,6 +26,8 @@ public class Documento {
     private String nombre;
 
     private String url;
+
+    private LocalDate fechaCreacion;
 
 
 

@@ -1,6 +1,6 @@
 package com.info.app.projectapp.domain;
 
-import com.info.app.projectapp.domain.enums.EstadoEnum;
+import com.info.app.projectapp.domain.enums.EstadoTareaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -25,13 +24,20 @@ public class Tarea {
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
 
+
+    @Column(nullable = false, length = 60)
     private String titulo;
 
+
+    @Column(length = 5000)
     private String descripcion;
 
-    private EstadoEnum estado;
 
-    private Proyecto proyecto;
+    @Enumerated(EnumType.STRING)
+    private EstadoTareaEnum estado;
 
-//    private List<Documento> documentos;
+
+//    private Proyecto proyecto;
+//
+////    private List<Documento> documentos;
 }

@@ -25,20 +25,23 @@ public class Proyecto {
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
 
-    @Column(length = 36)
+    @Column(nullable = false)
     private String nombre;
 
 
+    @Column(nullable = false)
     private LocalDate fechaInicio;
 
+
+    @Column(nullable = false)
     private LocalDate fechaFin;
 
-    private Usuario lider;
 
-//    private List<Usuario> colaboradores;
+//    private Usuario lider;
 //
-//    private List<Tarea> tareas;
-
+////   private List<Usuario> colaboradores;
+////
+////   private List<Tarea> tareas;
 
 
 }

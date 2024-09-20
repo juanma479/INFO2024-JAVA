@@ -25,12 +25,19 @@ public class Usuario {
     @Column(length = 36, columnDefinition = "varchar(36)", updatable = false, nullable = false)
     private UUID id;
 
+
+    @Column(nullable = false)
     private String nombre;
 
+
+    @Column(nullable = false, unique = true )
     private String email;
 
+
+    @Enumerated(EnumType.STRING)
     private RolEnum rol;
 
-    private Proyecto proyecto;
+
+//    private Proyecto proyecto;
 
 }
