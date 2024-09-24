@@ -1,6 +1,6 @@
-package com.info.app.projectapp.domain;
+package com.info.app.projectapp.persistance.domain;
 
-import com.info.app.projectapp.domain.enums.EstadoTareaEnum;
+import com.info.app.projectapp.persistance.domain.enums.EstadoTareaEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -37,7 +38,10 @@ public class Tarea {
     private EstadoTareaEnum estado;
 
 
-//    private Proyecto proyecto;
-//
-////    private List<Documento> documentos;
+    @ManyToOne()
+    private Proyecto proyecto;
+
+    @OneToMany( cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+    @JoinColumn(name = "tarea_id") //Columna que hace referencia
+    private List<Documento> documentos;
 }

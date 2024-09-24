@@ -1,4 +1,4 @@
-package com.info.app.projectapp.domain;
+package com.info.app.projectapp.persistance.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

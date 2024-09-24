@@ -1,12 +1,11 @@
-package com.info.app.projectapp.domain;
+package com.info.app.projectapp.persistance.domain;
 
-import com.info.app.projectapp.domain.enums.RolEnum;
+import com.info.app.projectapp.persistance.domain.enums.RolEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -38,6 +37,8 @@ public class Usuario {
     private RolEnum rol;
 
 
-//    private Proyecto proyecto;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Proyecto proyecto;
 
 }

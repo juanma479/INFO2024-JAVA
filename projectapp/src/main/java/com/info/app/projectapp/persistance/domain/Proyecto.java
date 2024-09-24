@@ -1,5 +1,6 @@
-package com.info.app.projectapp.domain;
+package com.info.app.projectapp.persistance.domain;
 
+import com.info.app.projectapp.persistance.domain.enums.RolEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,12 +37,25 @@ public class Proyecto {
     @Column(nullable = false)
     private LocalDate fechaFin;
 
+    @OneToOne
+    @JoinColumn(name = "lider_id", nullable = false)
+    private Usuario lider;
 
-//    private Usuario lider;
-//
-////   private List<Usuario> colaboradores;
-////
-////   private List<Tarea> tareas;
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   private List<Usuario> colaboradores;
+
+
+    @OneToMany(mappedBy = "proyecto", cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
+   private List<Tarea> tareas;
+
+    public void setUsuarioByRol(Usuario usuario) {
+
+        if (RolEnum.LIDER.equals(usuario.getRol())) {
+            this.setLider(usuario);
+        } else {
+            this.getColaboradores().add(usuario);
+        }
+    }
 
 
 }
