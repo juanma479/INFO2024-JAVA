@@ -30,9 +30,9 @@ public class UsuarioServiceImpl implements UsuarioService{
         Proyecto proyecto = proyectoService.getProyectoById(usuario.idProyecto());
 
         usuarioCreated.setProyecto(proyecto);
-        proyecto.setUsuarioByRol(usuarioCreated);
+//        proyecto.setUsuarioByRol(usuarioCreated);
 
-        proyectoRepository.save(proyecto);
+//        proyectoRepository.save(proyecto);
         return usuarioMapper.usuarioToUsuarioDto(usuarioRepository.save(usuarioCreated));
     }
 }

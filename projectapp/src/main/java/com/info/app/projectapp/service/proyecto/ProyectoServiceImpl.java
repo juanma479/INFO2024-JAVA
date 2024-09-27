@@ -2,16 +2,32 @@ package com.info.app.projectapp.service.proyecto;
 
 import com.info.app.projectapp.persistance.domain.Proyecto;
 import com.info.app.projectapp.persistance.repository.proyecto.ProyectoRepository;
+import com.info.app.projectapp.persistance.repository.usuario.UsuarioRepository;
+import com.info.app.projectapp.presentation.dto.proyecto.ProyectoCreateDto;
+import com.info.app.projectapp.presentation.dto.proyecto.ProyectoCreatedDto;
+import com.info.app.projectapp.presentation.dto.proyecto.ProyectoDto;
+import com.info.app.projectapp.presentation.dto.proyecto.ProyectoUpdatedDto;
+import com.info.app.projectapp.service.exceptions.BusinessException;
+import com.info.app.projectapp.service.exceptions.ResourceNotFoundException;
+import com.info.app.projectapp.service.mappers.proyecto.ProyectoMapper;
+import lombok.AllArgsConstructor;
+import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
 public class ProyectoServiceImpl implements ProyectoService{
 
+    private final UsuarioRepository usuarioRepository;
     private ProyectoRepository proyectoRepository;
+    private ProyectoMapper proyectoMapper;
+
 
     @Override
     public Proyecto getProyectoById(UUID id) {
@@ -23,6 +39,76 @@ public class ProyectoServiceImpl implements ProyectoService{
         } else {
             throw new NoSuchElementException("Proyecto no encontrado");
         }
+    }
+
+
+    @Override
+    public Optional<ProyectoDto> getProyectoDtoById(UUID uuid) {
+        Optional<Proyecto> optionalProyecto = proyectoRepository.findById(uuid);
+
+        if(optionalProyecto.isPresent()) {
+            return Optional.of(
+                    proyectoMapper.proyectoToProyectoDto(optionalProyecto.get())
+            );
+        } else {
+            return Optional.empty();
+        }
+    }
+
+
+    @Override
+    public Optional<ProyectoUpdatedDto> closeProyecto(UUID uuid) {
+        Optional<Proyecto> proyecto = proyectoRepository.findById(uuid);
+
+        if( proyecto.isPresent()) {
+            var proyectoEncontrado = proyecto.get();
+            proyectoEncontrado.setFechaFin(LocalDate.now());
+            var proyectoUpdated = proyectoRepository.save(proyectoEncontrado);
+            return Optional.of(proyectoMapper.proyectoToProyectoUpdatedDto(proyectoUpdated));
+        }
+
+        return Optional.empty();
+    }
+
+
+    @Override
+    public Optional<ProyectoCreatedDto> createProyecto(ProyectoCreateDto proyectoCreateDto) {
+        Proyecto newProyecto = proyectoMapper.proyectoCreateDtoToProyecto(proyectoCreateDto);
+
+        if (!proyectoCreateDto.colaboradoresId().isEmpty()) {
+            for (UUID colaboradorId : proyectoCreateDto.colaboradoresId()){
+                if (!usuarioRepository.existsById(colaboradorId)) {
+                    throw new ResourceNotFoundException("El colaborador con ID "+colaboradorId+" no existe." );
+                }
+            }
+
+            for(UUID colaboradorId : proyectoCreateDto.colaboradoresId()) {
+                if(!proyectoRepository.existsByColaboradores_Id(colaboradorId)) {
+                    throw new BusinessException("El colaborador con ID "+colaboradorId+" ya tiene un proyecto asignado.");
+                }
+            }
+        }
+
+        if (proyectoCreateDto.liderid() != null) {
+            if (!usuarioRepository.existsById(proyectoCreateDto.liderid())) {
+                throw new ResourceNotFoundException("El usuario con ID "+proyectoCreateDto.liderid()+" no existe");
+            }
+
+            if (proyectoRepository.existsByLider_Id(proyectoCreateDto.liderid())) {
+                throw new BusinessException("El usuario con ID "+proyectoCreateDto.liderid()+" ya lidera otro proyecto.");
+            }
+        }
+
+        return Optional.of(
+                proyectoMapper.proyectoToProyectoCreatedDto( proyectoRepository.save( newProyecto))
+        );
+    }
+
+
+    @Override
+    public List<ProyectoDto> getAllProyectos() {
+        return proyectoRepository.findAll().stream()
+                .map( proyecto -> proyectoMapper.proyectoToProyectoDto(proyecto)).toList();
     }
 
 
