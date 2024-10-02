@@ -29,7 +29,6 @@ public class TareaServiceImpl implements TareaService{
     private TareaRepository tareaRepository;
     private ProyectoRepository proyectoRepository;
 
-
     @Override
     public Optional<TareaCreatedDto> createTarea(TareaDto tareaDto) {
 
