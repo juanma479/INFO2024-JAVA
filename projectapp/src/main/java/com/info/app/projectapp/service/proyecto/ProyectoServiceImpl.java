@@ -1,7 +1,10 @@
 package com.info.app.projectapp.service.proyecto;
 
 import com.info.app.projectapp.persistance.domain.Proyecto;
+import com.info.app.projectapp.persistance.domain.Tarea;
+import com.info.app.projectapp.persistance.domain.enums.EstadoTareaEnum;
 import com.info.app.projectapp.persistance.repository.proyecto.ProyectoRepository;
+import com.info.app.projectapp.persistance.repository.tarea.TareaRepository;
 import com.info.app.projectapp.persistance.repository.usuario.UsuarioRepository;
 import com.info.app.projectapp.presentation.dto.proyecto.ProyectoCreateDto;
 import com.info.app.projectapp.presentation.dto.proyecto.ProyectoCreatedDto;
@@ -10,6 +13,7 @@ import com.info.app.projectapp.presentation.dto.proyecto.ProyectoUpdatedDto;
 import com.info.app.projectapp.service.exceptions.BusinessException;
 import com.info.app.projectapp.service.exceptions.ResourceNotFoundException;
 import com.info.app.projectapp.service.mappers.proyecto.ProyectoMapper;
+import com.info.app.projectapp.service.tarea.TareaService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -26,7 +30,11 @@ public class ProyectoServiceImpl implements ProyectoService{
 
     private final UsuarioRepository usuarioRepository;
     private ProyectoRepository proyectoRepository;
+    private TareaRepository tareaRepository;
+
     private ProyectoMapper proyectoMapper;
+
+    private TareaService tareaService;
 
 
     @Override
@@ -62,6 +70,16 @@ public class ProyectoServiceImpl implements ProyectoService{
 
         if( proyecto.isPresent()) {
             var proyectoEncontrado = proyecto.get();
+
+            List<Tarea> tareas = tareaRepository.findByProyectoId(uuid);
+            for(Tarea tarea : tareas) {
+                boolean tareaClosed = tareaService.updateEstadoTarea(tarea.getId(), EstadoTareaEnum.COMPLETA);
+
+                if (!tareaClosed) {
+                    throw new BusinessException("Error al cerrar la tarea con ID "+tarea.getId());
+                }
+            }
+
             proyectoEncontrado.setFechaFin(LocalDate.now());
             var proyectoUpdated = proyectoRepository.save(proyectoEncontrado);
             return Optional.of(proyectoMapper.proyectoToProyectoUpdatedDto(proyectoUpdated));
