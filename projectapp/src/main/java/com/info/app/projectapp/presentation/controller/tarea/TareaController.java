@@ -40,4 +40,18 @@ public class TareaController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error al actualizar el estado de la tarea.");
     }
+
+
+    @DeleteMapping("api/v1/tarea/{idTarea}")
+    public ResponseEntity<?> deleteTarea(@PathVariable("idTarea") UUID idTarea) {
+
+        boolean isDeleted = tareaService.deleteTarea(idTarea);
+
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+
+    }
 }

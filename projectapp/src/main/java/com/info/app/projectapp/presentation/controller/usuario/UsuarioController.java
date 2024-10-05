@@ -7,15 +7,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/v1/usuario")
 public class UsuarioController {
 
     private UsuarioService usuarioService;
 
-    @PostMapping("api/v1/usuario")
+    @PostMapping()
     public ResponseEntity<?> createUsuario(@RequestBody UsuarioDto usuario) {
         UsuarioDto usuarioDto = usuarioService.createUsuario(usuario);
 

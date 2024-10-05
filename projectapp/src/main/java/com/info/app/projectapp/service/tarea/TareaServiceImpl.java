@@ -11,9 +11,12 @@ import com.info.app.projectapp.presentation.dto.tarea.TareaDto;
 import com.info.app.projectapp.service.exceptions.ResourceNotFoundException;
 import com.info.app.projectapp.service.mappers.documento.DocumentoMapper;
 import com.info.app.projectapp.service.mappers.tarea.TareaMapper;
+import com.info.app.projectapp.service.proyecto.ProyectoService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,18 +30,17 @@ public class TareaServiceImpl implements TareaService{
     private DocumentoMapper documentoMapper;
 
     private TareaRepository tareaRepository;
-    private ProyectoRepository proyectoRepository;
+
+    private ProyectoService proyectoService;
 
     @Override
     public Optional<TareaCreatedDto> createTarea(TareaDto tareaDto) {
 
         Tarea tarea = tareaMapper.tareaDtoToTarea(tareaDto);
 
-        Proyecto proyecto = proyectoRepository.findById(tareaDto.uuidProyecto()).orElseThrow(()
-                -> new ResourceNotFoundException("El proyecto con ID "+tareaDto.uuidProyecto()+" no existe"));
-        tarea.setProyecto(proyecto);
+        Proyecto proyecto = proyectoService.getProyectoById(tareaDto.uuidProyecto());
 
-        if (tareaDto.documentos() != null && !tareaDto.documentos().isEmpty()) {
+        if (CollectionUtils.isEmpty(tareaDto.documentos())) {
             List<Documento> documentos = tareaDto.documentos().stream().map(
                     documentoMapper :: documentoDtoToDocumento).collect(Collectors.toList());
             tarea.setDocumentos(documentos);
@@ -64,5 +66,15 @@ public class TareaServiceImpl implements TareaService{
         } catch (Exception e) {
             return  false;
         }
+    }
+
+    @Override
+    public boolean deleteTarea(UUID idTarea) {
+
+        if (tareaRepository.existsById(idTarea)) {
+            tareaRepository.deleteById(idTarea);
+            return true;
+        }
+        return false;
     }
 }

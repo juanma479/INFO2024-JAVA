@@ -12,4 +12,6 @@ public interface TareaService {
     Optional<TareaCreatedDto> createTarea(TareaDto tareaDto);
 
     boolean updateEstadoTarea(UUID id, EstadoTareaEnum estadoTareaEnum);
+
+    boolean deleteTarea(UUID idTarea);
 }

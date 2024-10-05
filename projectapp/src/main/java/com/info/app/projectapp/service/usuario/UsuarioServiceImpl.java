@@ -5,10 +5,13 @@ import com.info.app.projectapp.persistance.domain.Usuario;
 import com.info.app.projectapp.persistance.repository.proyecto.ProyectoRepository;
 import com.info.app.projectapp.persistance.repository.usuario.UsuarioRepository;
 import com.info.app.projectapp.presentation.dto.usuario.UsuarioDto;
+import com.info.app.projectapp.service.exceptions.ResourceNotFoundException;
 import com.info.app.projectapp.service.mappers.usuario.UsuarioMapper;
 import com.info.app.projectapp.service.proyecto.ProyectoService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -30,9 +33,15 @@ public class UsuarioServiceImpl implements UsuarioService{
         Proyecto proyecto = proyectoService.getProyectoById(usuario.idProyecto());
 
         usuarioCreated.setProyecto(proyecto);
-//        proyecto.setUsuarioByRol(usuarioCreated);
-
-//        proyectoRepository.save(proyecto);
+//
         return usuarioMapper.usuarioToUsuarioDto(usuarioRepository.save(usuarioCreated));
+    }
+
+    @Override
+    public boolean usuarioExists(UUID id) {
+        if (!usuarioRepository.existsById(id)){
+            throw new ResourceNotFoundException("El usuario con ID "+id+" no existe." );
+        }
+        return true;
     }
 }

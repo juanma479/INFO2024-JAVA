@@ -14,6 +14,7 @@ import com.info.app.projectapp.service.exceptions.BusinessException;
 import com.info.app.projectapp.service.exceptions.ResourceNotFoundException;
 import com.info.app.projectapp.service.mappers.proyecto.ProyectoMapper;
 import com.info.app.projectapp.service.tarea.TareaService;
+import com.info.app.projectapp.service.usuario.UsuarioService;
 import lombok.AllArgsConstructor;
 import org.springframework.boot.context.config.ConfigDataResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,7 @@ public class ProyectoServiceImpl implements ProyectoService{
 
     private ProyectoMapper proyectoMapper;
 
+    private UsuarioService usuarioService;
     private TareaService tareaService;
 
 
@@ -95,25 +97,21 @@ public class ProyectoServiceImpl implements ProyectoService{
 
         if (!proyectoCreateDto.colaboradoresId().isEmpty()) {
             for (UUID colaboradorId : proyectoCreateDto.colaboradoresId()){
-                if (!usuarioRepository.existsById(colaboradorId)) {
-                    throw new ResourceNotFoundException("El colaborador con ID "+colaboradorId+" no existe." );
+                usuarioService.usuarioExists(colaboradorId);
+
+                if (proyectoRepository.existsByColaboradores_Id(colaboradorId)) {
+                    throw new BusinessException("El colaborador con ID "+colaboradorId+" ya tiene asignado un proyecto");
                 }
             }
 
-            for(UUID colaboradorId : proyectoCreateDto.colaboradoresId()) {
-                if(!proyectoRepository.existsByColaboradores_Id(colaboradorId)) {
-                    throw new BusinessException("El colaborador con ID "+colaboradorId+" ya tiene un proyecto asignado.");
-                }
-            }
         }
 
-        if (proyectoCreateDto.liderid() != null) {
-            if (!usuarioRepository.existsById(proyectoCreateDto.liderid())) {
-                throw new ResourceNotFoundException("El usuario con ID "+proyectoCreateDto.liderid()+" no existe");
-            }
+        UUID liderId = proyectoCreateDto.liderid();
+        if (liderId != null) {
+            usuarioService.usuarioExists(liderId);
 
-            if (proyectoRepository.existsByLider_Id(proyectoCreateDto.liderid())) {
-                throw new BusinessException("El usuario con ID "+proyectoCreateDto.liderid()+" ya lidera otro proyecto.");
+            if (proyectoRepository.existsByLider_Id(liderId)) {
+                throw new BusinessException("El usuario con ID "+liderId+" ya lidera otro proyecto.");
             }
         }
 
@@ -128,6 +126,5 @@ public class ProyectoServiceImpl implements ProyectoService{
         return proyectoRepository.findAll().stream()
                 .map( proyecto -> proyectoMapper.proyectoToProyectoDto(proyecto)).toList();
     }
-
 
 }
